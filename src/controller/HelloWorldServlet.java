@@ -1,18 +1,18 @@
 package controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 import com.sap.cloud.security.oauth2.OAuthAuthorization;
 import com.sap.cloud.security.oauth2.OAuthSystemException;
 
 import util.Constants;
+import util.Constants.HttpHeaders;
+import util.Constants.MimeType;
 
 /**
  * Servlet implementation class HelloWorldServlet
@@ -20,41 +20,45 @@ import util.Constants;
 @WebServlet("/HelloWorldServlet")
 public class HelloWorldServlet extends HttpServlet {
 
-	public static final String HTML = "text/html";
-
 	private static final long serialVersionUID = 1L;
+	private HttpHeaders headers = new Constants.HttpHeaders();
+	private MimeType mime_type = new Constants.MimeType();
+
 	public OAuthAuthorization oauth;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public HelloWorldServlet(OAuthAuthorization oauth) {
+	public HelloWorldServlet() {
 		super();
-		this.oauth = oauth;
+		this.oauth = OAuthAuthorization.getOAuthAuthorizationService();
+	}
+
+	public OAuthAuthorization getOAuth() {
+		return this.oauth;
 	}
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * @see HttpServlet#doGet(HttpServletRequest req, HttpServletResponse res)
 	 */
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-		PrintWriter pw = response.getWriter();
+		PrintWriter pw = res.getWriter();
 		Boolean isAuthorized = null;
 
 		try {
-			isAuthorized = this.oauth.isAuthorized(request);
+			isAuthorized = this.getOAuth().isAuthorized(req);
 		} catch (OAuthSystemException | NullPointerException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return;
 		}
 
 		if (!isAuthorized) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			res.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
 
-		response.addHeader(Constants.HttpHeaders.CONTENT_TYPE, Constants.Text.TEXT_HTML);
+		res.addHeader(headers.CONTENT_TYPE, mime_type.TEXT_HTML);
 		pw.println("Contact light");
 	}
 }

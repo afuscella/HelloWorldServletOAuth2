@@ -2,18 +2,13 @@ package test;
 
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
 import com.sap.cloud.security.oauth2.OAuthAuthorization;
 import com.sap.cloud.security.oauth2.OAuthSystemException;
@@ -25,42 +20,43 @@ public class HelloWorldServletTest {
 	HelloWorldServlet helloServlet;
 
 	@Mock
-	HttpServletRequest request;
+	HttpServletRequest req;
 
 	@Mock
-	HttpServletResponse response;
+	HttpServletResponse res;
 
 	@Mock
 	OAuthAuthorization oauth;
 
 	@Before
 	public void before() {
+		helloServlet = new HelloWorldServlet();
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
 	public void testAuthorizedOk() throws ServletException, OAuthSystemException, IOException {
-		when(oauth.isAuthorized(request)).thenReturn(true);
+		helloServlet.oauth = oauth;
+		when(helloServlet.oauth.isAuthorized(req)).thenReturn(true);
 
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
-		when(response.getWriter()).thenReturn(pw);
+		when(res.getWriter()).thenReturn(pw);
 
-		helloServlet = new HelloWorldServlet(oauth);
-		helloServlet.doGet(request, response);
+		helloServlet.doGet(req, res);
 	}
 
 	@Test
-	public void testAuthorizedFail() throws ServletException, IOException {
-		helloServlet = new HelloWorldServlet(oauth);
-		helloServlet.doGet(request, response);
+	public void testAuthorizedFail() throws ServletException, IOException, OAuthSystemException {
+		helloServlet.oauth = oauth;
+		when(helloServlet.oauth.isAuthorized(req)).thenReturn(false);
+
+		helloServlet.doGet(req, res);
 	}
 
 	@Test
 	public void testOauthRequestException() throws ServletException, IOException {
-		oauth = null;
-
-		helloServlet = new HelloWorldServlet(oauth);
-		helloServlet.doGet(request, response);
+		helloServlet.oauth = null;
+		helloServlet.doGet(req, res);
 	}
 }
