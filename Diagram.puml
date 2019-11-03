@@ -1,0 +1,12 @@
+@startuml
+
+abstract HttpServlet {
+}
+
+class HelloWorldServlet extends HttpServlet{
+    -OAuthAuthorization oauth
+    +doGet()
+}
+
+HelloWorldServlet-OAuthAuthorization
+@enduml
