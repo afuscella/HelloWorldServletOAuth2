@@ -22,45 +22,46 @@ import controller.HelloWorldServlet;
 
 public class HelloWorldServletTest {
 
-	HelloWorldServlet helloServlet;
+	private HelloWorldServlet helloServlet;
 
 	@Mock
-	HttpServletRequest request;
+	HttpServletRequest req;
 
 	@Mock
-	HttpServletResponse response;
+	HttpServletResponse res;
 
 	@Mock
 	OAuthAuthorization oauth;
 
 	@Before
 	public void before() {
+		this.helloServlet = new HelloWorldServlet();
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
 	public void testAuthorizedOk() throws ServletException, OAuthSystemException, IOException {
-		when(oauth.isAuthorized(request)).thenReturn(true);
+		when(oauth.isAuthorized(req)).thenReturn(true);
 
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
-		when(response.getWriter()).thenReturn(pw);
+		when(res.getWriter()).thenReturn(pw);
 
-		helloServlet = new HelloWorldServlet(oauth);
-		helloServlet.doGet(request, response);
+		this.helloServlet.setOAuth(oauth);
+		this.helloServlet.doGet(req, res);
 	}
 
 	@Test
-	public void testAuthorizedFail() throws ServletException, IOException {
-		helloServlet = new HelloWorldServlet(oauth);
-		helloServlet.doGet(request, response);
+	public void testAuthorizedFail() throws ServletException, IOException, OAuthSystemException {
+		when(oauth.isAuthorized(req)).thenReturn(false);
+
+		this.helloServlet.setOAuth(oauth);
+		this.helloServlet.doGet(req, res);
 	}
 
 	@Test
 	public void testOauthRequestException() throws ServletException, IOException {
-		oauth = null;
-
-		helloServlet = new HelloWorldServlet(oauth);
-		helloServlet.doGet(request, response);
+		this.helloServlet = new HelloWorldServlet();
+		this.helloServlet.doGet(req, res);
 	}
 }
