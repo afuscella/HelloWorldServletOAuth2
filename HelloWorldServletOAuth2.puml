@@ -1,0 +1,25 @@
+@startuml
+
+abstract HttpServlet {
+}
+
+class HelloWorldServlet extends HttpServlet {
+    - HelloWorldService helloWorldService
+    + doGet (HttpServletRequest request, HttpServletResponse response)
+}
+
+class HelloWorldService {
+    - OAuth2Configuration oAuth2Configuration
+    + handleGetRequest(HttpServletRequest request, HttpServletResponse response)
+}
+
+class OAuth2Configuration {
+    - OAuthAuthorization oAuthAuthorization
+    - Logger logger
+    + checkAuthorization(HttpServletRequest request)
+}
+
+HelloWorldServlet -up-* HelloWorldService
+HelloWorldService -up-* OAuth2Configuration
+
+@enduml
