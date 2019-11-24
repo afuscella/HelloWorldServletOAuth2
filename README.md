@@ -1,9 +1,14 @@
-# HelloWorldServletOAuth
-Servlet deployed in SCP and consumed through oAuth2
+# HelloWorldServletOAuth2
+
+**SAP JAVA sdk should be configured. See more in [SAP Development Tools](https://tools.hana.ondemand.com/#cloud)**
+
+---
+
+Servlet deployed in SCP and authenticad through oAuth2
 
 - Unit tests (Authorized, Not Authorized, Failed)
 - Code coverage above 90%
 
 ## UML Diagram
 
-![UML](uml.PNG)
+![hello-world-servlet-oauth2-uml.PNG](hello-world-servlet-oauth2-uml.PNG)

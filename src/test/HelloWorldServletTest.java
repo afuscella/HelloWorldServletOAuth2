@@ -47,7 +47,7 @@ public class HelloWorldServletTest {
 		PrintWriter pw = new PrintWriter(sw);
 		when(res.getWriter()).thenReturn(pw);
 
-		this.helloServlet.setOAuth(oauth);
+		//this.helloServlet.setOAuth(oauth);
 		this.helloServlet.doGet(req, res);
 	}
 
@@ -55,7 +55,7 @@ public class HelloWorldServletTest {
 	public void testAuthorizedFail() throws ServletException, IOException, OAuthSystemException {
 		when(oauth.isAuthorized(req)).thenReturn(false);
 
-		this.helloServlet.setOAuth(oauth);
+		//this.helloServlet.setOAuth(oauth);
 		this.helloServlet.doGet(req, res);
 	}
 

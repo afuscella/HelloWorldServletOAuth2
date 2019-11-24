@@ -1,68 +1,46 @@
 package controller;
 
-import java.io.*;
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import com.sap.cloud.security.oauth2.OAuthAuthorization;
-import com.sap.cloud.security.oauth2.OAuthSystemException;
-
-import util.Constants;
-import util.Constants.HttpHeaders;
-import util.Constants.MimeType;
+import exception.OAuthException;
+import service.HelloWorldService;
 
 /**
  * Servlet implementation class HelloWorldServlet
  */
+@SuppressWarnings("serial")
 @WebServlet("/HelloWorldServlet")
 public class HelloWorldServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-	private HttpHeaders headers = new Constants.HttpHeaders();
-	private MimeType mime_type = new Constants.MimeType();
-
-	private OAuthAuthorization oauth;
+	private HelloWorldService helloWorldService;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public HelloWorldServlet() {
 		super();
-		this.setOAuth(OAuthAuthorization.getOAuthAuthorizationService());
-	}
-
-	public void setOAuth(OAuthAuthorization oauth) {
-		this.oauth = oauth;
-	}
-
-	public OAuthAuthorization getOAuth() {
-		return this.oauth;
+		this.helloWorldService = new HelloWorldService();
 	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest req, HttpServletResponse res)
 	 */
-	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-
-		PrintWriter pw = res.getWriter();
-		Boolean isAuthorized = null;
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
 		try {
-			isAuthorized = this.getOAuth().isAuthorized(req);
-		} catch (OAuthSystemException | NullPointerException e) {
-			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			return;
-		}
+			helloWorldService.handleGetRequest(request, response);
+			response.setStatus(HttpServletResponse.SC_OK);
 
-		if (!isAuthorized) {
-			res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			return;
+		} catch (OAuthException e) {
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+		} catch (IOException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
-
-		res.addHeader(headers.CONTENT_TYPE, mime_type.TEXT_HTML);
-		pw.println("Contact light");
 	}
 }
