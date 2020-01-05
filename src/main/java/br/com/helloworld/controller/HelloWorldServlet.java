@@ -1,20 +1,17 @@
-package controller;
+package br.com.helloworld.controller;
 
 import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import exception.OAuthException;
-import service.HelloWorldService;
+import br.com.helloworld.exception.OAuthException;
+import br.com.helloworld.service.HelloWorldService;
 
 /**
  * Servlet implementation class HelloWorldServlet
  */
-@SuppressWarnings("serial")
 @WebServlet("/HelloWorldServlet")
 public class HelloWorldServlet extends HttpServlet {
 
@@ -24,22 +21,23 @@ public class HelloWorldServlet extends HttpServlet {
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public HelloWorldServlet() {
-		super();
 		this.helloWorldService = new HelloWorldService();
 	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest req, HttpServletResponse res)
 	 */
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
 			helloWorldService.handleGetRequest(request, response);
 			response.setStatus(HttpServletResponse.SC_OK);
 
-		} catch (OAuthException e) {
+		}
+		catch (OAuthException e) {
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
