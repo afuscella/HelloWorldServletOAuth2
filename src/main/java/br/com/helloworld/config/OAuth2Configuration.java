@@ -1,4 +1,4 @@
-package config;
+package br.com.helloworld.config;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.sap.cloud.security.oauth2.OAuthAuthorization;
 import com.sap.cloud.security.oauth2.OAuthSystemException;
 
-import exception.OAuthException;
+import br.com.helloworld.exception.OAuthException;
 
 public class OAuth2Configuration {
 
@@ -21,11 +21,12 @@ public class OAuth2Configuration {
 
 	public void checkAuthorization(HttpServletRequest request) throws OAuthException {
 
-		Boolean isAuthorized;
+		boolean isAuthorized;
 		try {
 			isAuthorized = this.oAuthAuthorization.isAuthorized(request);
 
-		} catch (OAuthSystemException e) {
+		}
+		catch (OAuthSystemException e) {
 			logger.error(OAuthException.NOT_AUTHORIZED, e);
 			isAuthorized = false;
 		}
