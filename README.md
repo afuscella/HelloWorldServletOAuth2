@@ -11,4 +11,4 @@ Servlet deployed in SCP and authenticad through oAuth2
 
 ## UML Diagram
 
-![hello-world-servlet-oauth2-uml.PNG](hello-world-servlet-oauth2-uml.PNG)
+![hello-world-servlet-oauth2-uml.PNG](.images/hello-world-servlet-oauth2-uml.PNG)
