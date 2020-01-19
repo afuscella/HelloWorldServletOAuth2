@@ -57,7 +57,8 @@ public class HelloWorldServletTest {
 
 	@Test
 	public void testOauthRequestException() throws HelloWorldException {
-		Mockito.doThrow(HelloWorldException.class).when(helloWorldService).handleGetRequest(Mockito.any(), Mockito.any());
+		Mockito.doThrow(HelloWorldException.class).when(helloWorldService)
+				.handleGetRequest(Mockito.any(), Mockito.any());
 		this.helloServlet.doGet(req, res);
 	}
 }
