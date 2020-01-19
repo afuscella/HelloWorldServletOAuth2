@@ -1,3 +1,5 @@
+package br.com.helloworld;
+
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -9,11 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import br.com.helloworld.controller.HelloWorldServlet;
+import br.com.helloworld.exception.HelloWorldException;
+import br.com.helloworld.exception.OAuthException;
+import br.com.helloworld.service.HelloWorldService;
 import com.sap.cloud.security.oauth2.OAuthAuthorization;
-import com.sap.cloud.security.oauth2.OAuthSystemException;
 
 public class HelloWorldServletTest {
 
@@ -24,18 +29,19 @@ public class HelloWorldServletTest {
 	@Mock
 	OAuthAuthorization oauth;
 
+	@Mock
+	private HelloWorldService helloWorldService;
+
 	private HelloWorldServlet helloServlet;
 
 	@Before
 	public void before() {
-		this.helloServlet = new HelloWorldServlet();
 		MockitoAnnotations.initMocks(this);
+		this.helloServlet = new HelloWorldServlet(helloWorldService);
 	}
 
 	@Test
-	public void testAuthorizedOk() throws OAuthSystemException, IOException {
-		when(oauth.isAuthorized(req)).thenReturn(true);
-
+	public void testAuthorizedOk() throws IOException {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		when(res.getWriter()).thenReturn(pw);
@@ -44,15 +50,14 @@ public class HelloWorldServletTest {
 	}
 
 	@Test
-	public void testAuthorizedFail() throws OAuthSystemException {
-		when(oauth.isAuthorized(req)).thenReturn(false);
-
+	public void testAuthorizedFail() throws HelloWorldException {
+		Mockito.doThrow(OAuthException.class).when(helloWorldService).handleGetRequest(Mockito.any(), Mockito.any());
 		this.helloServlet.doGet(req, res);
 	}
 
 	@Test
-	public void testOauthRequestException() {
-		this.helloServlet = new HelloWorldServlet();
+	public void testOauthRequestException() throws HelloWorldException {
+		Mockito.doThrow(HelloWorldException.class).when(helloWorldService).handleGetRequest(Mockito.any(), Mockito.any());
 		this.helloServlet.doGet(req, res);
 	}
 }
